@@ -61,13 +61,28 @@ public class Ball {
         return y + (diameter/2);
     }
 
+    public void setCenterX(int x){ }
+    public void setCenterY(int y){ }
+
     public int getDiameter() {
         return diameter;
     }
 
     public boolean detectCollision(Ball ball2){
-        double distance = Math.sqrt(Math.pow(getCenterX() - ball2.getCenterX(), 2) + Math.pow(getCenterY() - ball2.getCenterY(), 2));
-        if (distance < (diameter/2) + (ball2.getDiameter()/2)) return true;
+        double distance = Math.pow(getCenterX() - ball2.getCenterX(), 2) + Math.pow(getCenterY() - ball2.getCenterY(), 2);
+        if (distance < Math.pow((diameter/2) + (ball2.getDiameter()/2), 2)) return true;
         return false;
+    }
+
+    public void collisionResponse(Ball ball2){
+        // mid poit p = 1/2(center1 + center2)
+
+        double midpointX = 0.5*(getCenterX() + ball2.getCenterX());
+        double midpointY = 0.5*(getCenterY() + ball2.getCenterY());
+        //new center newCenter = p - diameter*(center1-center2)/distance
+
+        setCenterX(2);
+        setCenterY(3);
+
     }
 }
