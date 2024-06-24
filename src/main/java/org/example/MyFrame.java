@@ -3,78 +3,179 @@ package org.example;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.border.BevelBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
-public class MyFrame extends JComponent{
+public class MyFrame extends JComponent implements ChangeListener, ActionListener {
 
     private int WIDTH;
     private int HEIGHT;
-    int numberOfBalls;
+    private int BALLSPANELWIDTH;
+    private int BALLSPANELHEIGHT;
+    public int numberOfBalls;
+    boolean symulationStart;
+    boolean ballsSizeRandom;
     public Ball[] balls;
 
+    private JPanel BallsPanel;
+    private JPanel ButtonsPanel;
+    private JLabel menuLabel;
+    private JLabel nrOfBallsLabel;
+    private JSlider nrOfBallsSlider;
+    private JButton startButton;
+    private JRadioButton sizeButton;
+    JFrame gui;
+    BallsPanel ballspanel;
 
 
-    MyFrame(int argNB){
-        WIDTH = 1000;
+
+    MyFrame(){
+        WIDTH = 1200;
         HEIGHT = 700;
-        this.numberOfBalls = argNB;
+        BALLSPANELWIDTH = 220;
+        symulationStart = false;
+        ballsSizeRandom = false;
 
-        JFrame gui = new JFrame();
+
+        gui = new JFrame();
         gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         gui.setTitle("Java Projekt");
         gui.setPreferredSize(new Dimension(WIDTH+5, HEIGHT+30));
         gui.setResizable(false);
         gui.getContentPane().add(this);
 
+        //Panel
+        ButtonsPanel = new JPanel();
+        this.add(ButtonsPanel);
+
+        ButtonsPanel.setLayout(new GridLayout(7, 1));
+        ButtonsPanel.setBounds(0, 0, 220, 700);
+        ButtonsPanel.setBorder(
+                BorderFactory.createEtchedBorder(BevelBorder.LOWERED));
 
         gui.pack();
         gui.setLocationRelativeTo(null);
         gui.setVisible(true);
 
-        balls = new Ball[numberOfBalls];
-        for(int i = 0; i < numberOfBalls; i++){
-            balls[i] = new Ball((int)(Math.random()*600) + 200, (int)(Math.random()*500) + 100, (int)(Math.random()*9) + 1, (int)(Math.random()*9) + 1, 0 , WIDTH, 0 , HEIGHT);
-        }
+        //menu label
+        Font font =  new Font("Arial", Font.BOLD, 30);
+        menuLabel = new JLabel("Menu");
+        //menuLabel.setBounds(80, 20, 60, 30);
+        menuLabel.setFont(font);
+
+        //Slider
+        nrOfBallsSlider = new JSlider(0, 10, 3);
+        nrOfBallsSlider.setSize(160, 50);
+        //nrOfBallsSlider.setBounds(20, 120, 160, 60 );
+        nrOfBallsSlider.setPaintTicks(true);
+        nrOfBallsSlider.setMinorTickSpacing(1);
+        nrOfBallsSlider.setMajorTickSpacing(5);
+        nrOfBallsSlider.setPaintLabels(true);
+        nrOfBallsSlider.setFont(new Font("Arial", Font.PLAIN, 10));
+        nrOfBallsSlider.addChangeListener(this);
+
+        // Slider label
+        nrOfBallsLabel = new JLabel("Liczba kulek:  " + nrOfBallsSlider.getValue());
+        //nrOfBallsLabel.setBounds(50, 180, 100, 30);
+        nrOfBallsLabel.setFont(new Font("Arial", Font.BOLD, 15));
+
+        // Radiobutton
+        sizeButton = new JRadioButton("losowy rozmiar kulek");
+        //sizeButton.setBounds(30, 220, 120, 60 );
+        nrOfBallsSlider.setFont(new Font("Arial", Font.BOLD, 10));
+
+        //start button
+        startButton = new JButton("Start");
+        startButton.setSize(100, 50);
+        startButton.setFont(new Font("Arial", Font.BOLD, 20));
+        startButton.setText("Start");
+        startButton.addActionListener(this);
+
+
+
+        ButtonsPanel.add(menuLabel);
+
+        ButtonsPanel.add(nrOfBallsSlider);
+
+        ButtonsPanel.add(nrOfBallsLabel);
+
+        ButtonsPanel.add(sizeButton);
+
+        ButtonsPanel.add(startButton);
+
+        ButtonsPanel.validate();
+
+        numberOfBalls = nrOfBallsSlider.getValue();
+
+        ballspanel = new BallsPanel(numberOfBalls, sizeButton.isSelected());
 
     }
 
-    public void paintComponent(Graphics g){
-        if(balls != null){
-            for(Ball ball : balls){
-                if(ball != null) ball.drawSelf(g);
-            }
-        }
-
+    @Override
+    public void stateChanged(ChangeEvent e){
+        nrOfBallsLabel.setText("Liczba kulek: " + nrOfBallsSlider.getValue());
+        if(!symulationStart) numberOfBalls = nrOfBallsSlider.getValue();
     }
 
-    public void loop(){
-        for(Ball ball : balls){
-            ball.move();
-        }
-
-        for(int i = 0; i < numberOfBalls-1; i++ ){
-            for(int j = i + 1; j < numberOfBalls; j++ ){
-                if(balls[i].detectCollision(balls[j])) System.out.println("Colision!");
-            }
-        }
-
-        repaint();
+    @Override
+    public void actionPerformed(ActionEvent e){
+        symulationStart = true;
+        ballspanel = new BallsPanel(numberOfBalls, sizeButton.isSelected());
+        this.add(ballspanel);
+        this.validate();
+        ballspanel.start(60);
     }
 
-    public void start(final int ticks){
-        Thread gameThread = new Thread(){
-            public void run(){
-                while(true){
-                    loop();
-                    try {
-                        Thread.sleep(1000 / ticks);
-                    }catch(Exception e){
-                        e.printStackTrace();
-                    }
-                }
-            }
-        };
-        gameThread.start();
-    }
+
+
+//    public void paintComponent(Graphics g){
+//        if(symulationStart){
+//            if(balls != null){
+//                for(Ball ball : balls){
+//                    if(ball != null) ball.drawSelf(g);
+//                }
+//            }
+//        }
+//
+//    }
+
+//    public void loop(){
+//        for(Ball ball : balls){
+//            ball.move();
+//        }
+//
+//        for(int i = 0; i < numberOfBalls-1; i++ ){
+//            for(int j = i + 1; j < numberOfBalls; j++ ){
+//                if(balls[i].detectCollision(balls[j])){
+//
+//                    balls[i].dynamicCollisionResponse(balls[j]);
+//                    System.out.println("Velocity1: ( " + balls[i].getVelocityX() + ", " + balls[i].getVelocityY() + " )" );
+//                    System.out.println("Velocity2: ( " + balls[j].getVelocityX() + ", " + balls[j].getVelocityY() + " )" );
+//                }
+//            }
+//        }
+//
+//        repaint();
+//    }
+//
+//    public void start(final int ticks){
+//
+//
+//        Thread gameThread = new Thread(){
+//            public void run(){
+//                while(true){
+//                    loop();
+//                    try {
+//                        Thread.sleep(1000 / ticks);
+//                    }catch(Exception e){
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }
+//        };
+//        gameThread.start();
+//    }
 
 
 
