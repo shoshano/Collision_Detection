@@ -16,8 +16,6 @@ public class BallsPanel extends JPanel {
         this.setBorder(
                 BorderFactory.createEtchedBorder(BevelBorder.LOWERED));
 
-        JLabel test = new JLabel("test");
-        this.add(test);
 
         numberOfBalls = argNrBalls;
         this.isRandom = isRandom;

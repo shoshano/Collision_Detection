@@ -120,63 +120,15 @@ public class MyFrame extends JComponent implements ChangeListener, ActionListene
 
     @Override
     public void actionPerformed(ActionEvent e){
+
+        if(!symulationStart){
+            ballspanel = new BallsPanel(numberOfBalls, sizeButton.isSelected());
+            this.add(ballspanel);
+            this.validate();
+            ballspanel.start(60);
+        }
         symulationStart = true;
-        ballspanel = new BallsPanel(numberOfBalls, sizeButton.isSelected());
-        this.add(ballspanel);
-        this.validate();
-        ballspanel.start(60);
+
     }
-
-
-
-//    public void paintComponent(Graphics g){
-//        if(symulationStart){
-//            if(balls != null){
-//                for(Ball ball : balls){
-//                    if(ball != null) ball.drawSelf(g);
-//                }
-//            }
-//        }
-//
-//    }
-
-//    public void loop(){
-//        for(Ball ball : balls){
-//            ball.move();
-//        }
-//
-//        for(int i = 0; i < numberOfBalls-1; i++ ){
-//            for(int j = i + 1; j < numberOfBalls; j++ ){
-//                if(balls[i].detectCollision(balls[j])){
-//
-//                    balls[i].dynamicCollisionResponse(balls[j]);
-//                    System.out.println("Velocity1: ( " + balls[i].getVelocityX() + ", " + balls[i].getVelocityY() + " )" );
-//                    System.out.println("Velocity2: ( " + balls[j].getVelocityX() + ", " + balls[j].getVelocityY() + " )" );
-//                }
-//            }
-//        }
-//
-//        repaint();
-//    }
-//
-//    public void start(final int ticks){
-//
-//
-//        Thread gameThread = new Thread(){
-//            public void run(){
-//                while(true){
-//                    loop();
-//                    try {
-//                        Thread.sleep(1000 / ticks);
-//                    }catch(Exception e){
-//                        e.printStackTrace();
-//                    }
-//                }
-//            }
-//        };
-//        gameThread.start();
-//    }
-
-
 
 }
